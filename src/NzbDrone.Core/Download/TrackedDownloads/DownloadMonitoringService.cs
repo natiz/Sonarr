@@ -155,6 +155,12 @@ namespace NzbDrone.Core.Download.TrackedDownloads
             Refresh();
         }
 
+        public void Execute(CheckForFinishedDownloadCommand message)
+        {
+            _logger.Warn("CheckForFinishedDownload is deprecated, use RefreshMonitoredDownloads instead");
+            Refresh();
+        }
+
         public void Handle(EpisodeGrabbedEvent message)
         {
             _refreshDebounce.Execute();

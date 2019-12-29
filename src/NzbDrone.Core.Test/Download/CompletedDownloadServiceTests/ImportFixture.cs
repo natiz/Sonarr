@@ -198,26 +198,29 @@ namespace NzbDrone.Core.Test.Download.CompletedDownloadServiceTests
         public void should_not_mark_as_imported_if_some_of_episodes_were_not_imported_including_history()
         {
             _trackedDownload.RemoteEpisode.Episodes = new List<Episode>
-            {
-               _episode1,
-               _episode2,
-               _episode3
-            };
+                                                      {
+                                                          new Episode(),
+                                                          new Episode(),
+                                                          new Episode()
+                                                      };
 
             Mocker.GetMock<IDownloadedEpisodesImportService>()
                   .Setup(v => v.ProcessPath(It.IsAny<string>(), It.IsAny<ImportMode>(), It.IsAny<Series>(), It.IsAny<DownloadClientItem>()))
                   .Returns(new List<ImportResult>
                            {
-                               new ImportResult(new ImportDecision(new LocalEpisode {Path = @"C:\TestPath\Droned.S01E01.mkv", Episodes = { _episode1 }})),
-                               new ImportResult(new ImportDecision(new LocalEpisode {Path = @"C:\TestPath\Droned.S01E02.mkv", Episodes = { _episode2 }}),"Test Failure"),
-                               new ImportResult(new ImportDecision(new LocalEpisode {Path = @"C:\TestPath\Droned.S01E03.mkv", Episodes = { _episode3 }}),"Test Failure")
+                               new ImportResult(new ImportDecision(new LocalEpisode {Path = @"C:\TestPath\Droned.S01E01.mkv"})),
+                               new ImportResult(new ImportDecision(new LocalEpisode{Path = @"C:\TestPath\Droned.S01E01.mkv"}),"Test Failure"),
+                               new ImportResult(new ImportDecision(new LocalEpisode{Path = @"C:\TestPath\Droned.S01E01.mkv"}),"Test Failure")
                            });
+
+            var history = Builder<History.History>.CreateListOfSize(2)
+                                                  .BuildList();
 
             Mocker.GetMock<IHistoryService>()
                   .Setup(s => s.FindByDownloadId(It.IsAny<string>()))
                   .Returns(history);
 
-            Mocker.GetMock<ITrackedDownloadAlreadyImportService>()
+            Mocker.GetMock<ITrackedDownloadAlreadyImported>()
                   .Setup(s => s.IsImported(_trackedDownload, history))
                   .Returns(true);
 
@@ -278,7 +281,7 @@ namespace NzbDrone.Core.Test.Download.CompletedDownloadServiceTests
                   .Setup(s => s.FindByDownloadId(It.IsAny<string>()))
                   .Returns(history);
 
-            Mocker.GetMock<ITrackedDownloadAlreadyImportService>()
+            Mocker.GetMock<ITrackedDownloadAlreadyImported>()
                   .Setup(s => s.IsImported(It.IsAny<TrackedDownload>(), It.IsAny<List<History.History>>()))
                   .Returns(true);
 

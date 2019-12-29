@@ -26,21 +26,21 @@ namespace NzbDrone.Core.Download
         private readonly IDownloadedEpisodesImportService _downloadedEpisodesImportService;
         private readonly IParsingService _parsingService;
         private readonly ISeriesService _seriesService;
-        private readonly ITrackedDownloadAlreadyImportService _trackedDownloadAlreadyImportService;
+        private readonly ITrackedDownloadAlreadyImported _trackedDownloadAlreadyImported;
 
         public CompletedDownloadService(IEventAggregator eventAggregator,
                                         IHistoryService historyService,
                                         IDownloadedEpisodesImportService downloadedEpisodesImportService,
                                         IParsingService parsingService,
                                         ISeriesService seriesService,
-                                        ITrackedDownloadAlreadyImportService trackedDownloadAlreadyImportService)
+                                        ITrackedDownloadAlreadyImported trackedDownloadAlreadyImported)
         {
             _eventAggregator = eventAggregator;
             _historyService = historyService;
             _downloadedEpisodesImportService = downloadedEpisodesImportService;
             _parsingService = parsingService;
             _seriesService = seriesService;
-            _trackedDownloadAlreadyImportService = trackedDownloadAlreadyImportService;
+            _trackedDownloadAlreadyImported = trackedDownloadAlreadyImported;
         }
 
         public void Process(TrackedDownload trackedDownload)
@@ -128,7 +128,7 @@ namespace NzbDrone.Core.Download
                                                   .OrderByDescending(h => h.Date)
                                                   .ToList();
 
-                var allEpisodesImportedInHistory = _trackedDownloadAlreadyImportService.IsImported(trackedDownload, historyItems);
+                var allEpisodesImportedInHistory = _trackedDownloadAlreadyImported.IsImported(trackedDownload, historyItems);
 
                 if (allEpisodesImportedInHistory)
                 {
@@ -140,7 +140,6 @@ namespace NzbDrone.Core.Download
 
             trackedDownload.State = TrackedDownloadState.ImportPending;
 
-            if (importedEpisodes.Count() >= Math.Max(1, trackedDownload.RemoteEpisode.Episodes.Count))
             if (importResults.Empty())
             {
                 trackedDownload.Warn("No files found are eligible for import in {0}", outputPath);

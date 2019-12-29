@@ -5,12 +5,12 @@ using NzbDrone.Core.History;
 
 namespace NzbDrone.Core.Download.TrackedDownloads
 {
-    public interface ITrackedDownloadAlreadyImportService
+    public interface ITrackedDownloadAlreadyImported
     {
         bool IsImported(TrackedDownload trackedDownload, List<History.History> historyItems);
     }
 
-    public class TrackedDownloadAlreadyImportService : ITrackedDownloadAlreadyImportService
+    public class TrackedDownloadAlreadyImported : ITrackedDownloadAlreadyImported
     {
         public bool IsImported(TrackedDownload trackedDownload, List<History.History> historyItems)
         {

@@ -11,7 +11,7 @@ using FizzWare.NBuilder;
 namespace NzbDrone.Core.Test.Download.TrackedDownloads
 {
     [TestFixture]
-    public class TrackedDownloadAlreadyImportedServiceFixture : CoreTest<TrackedDownloadAlreadyImportService>
+    public class TrackedDownloadAlreadyImportedServiceFixture : CoreTest<TrackedDownloadAlreadyImported>
     {
         private List<Episode> _episodes;
         private TrackedDownload _trackedDownload;

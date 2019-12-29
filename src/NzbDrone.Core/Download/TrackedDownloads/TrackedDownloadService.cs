@@ -25,7 +25,7 @@ namespace NzbDrone.Core.Download.TrackedDownloads
         private readonly IParsingService _parsingService;
         private readonly IHistoryService _historyService;
         private readonly IEventAggregator _eventAggregator;
-        private readonly ITrackedDownloadAlreadyImportService _trackedDownloadAlreadyImportService;
+        private readonly ITrackedDownloadAlreadyImported _trackedDownloadAlreadyImported;
         private readonly Logger _logger;
         private readonly ICached<TrackedDownload> _cache;
 
@@ -33,13 +33,13 @@ namespace NzbDrone.Core.Download.TrackedDownloads
                                       ICacheManager cacheManager,
                                       IHistoryService historyService,
                                       IEventAggregator eventAggregator,
-                                      ITrackedDownloadAlreadyImportService trackedDownloadAlreadyImportService,
+                                      ITrackedDownloadAlreadyImported trackedDownloadAlreadyImported,
                                       Logger logger)
         {
             _parsingService = parsingService;
             _historyService = historyService;
             _eventAggregator = eventAggregator;
-            _trackedDownloadAlreadyImportService = trackedDownloadAlreadyImportService;
+            _trackedDownloadAlreadyImported = trackedDownloadAlreadyImported;
             _cache = cacheManager.GetCache<TrackedDownload>(GetType());
             _logger = logger;
         }
@@ -112,7 +112,7 @@ namespace NzbDrone.Core.Download.TrackedDownloads
 
                     if (state == TrackedDownloadState.Imported)
                     {
-                        var allImported = _trackedDownloadAlreadyImportService.IsImported(trackedDownload, historyItems);
+                        var allImported = _trackedDownloadAlreadyImported.IsImported(trackedDownload, historyItems);
 
                         trackedDownload.State = allImported ? TrackedDownloadState.Imported : TrackedDownloadState.Downloading;
                     }
@@ -174,7 +174,7 @@ namespace NzbDrone.Core.Download.TrackedDownloads
         }
 
         private void LogItemChange(TrackedDownload trackedDownload, DownloadClientItem existingItem, DownloadClientItem downloadItem)
-	    {
+        {
             if (existingItem == null ||
                 existingItem.Status != downloadItem.Status ||
                 existingItem.CanBeRemoved != downloadItem.CanBeRemoved ||
